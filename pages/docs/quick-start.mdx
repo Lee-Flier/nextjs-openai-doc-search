@@ -1,24 +1,24 @@
-# 快速开始
+git# 快速开始
 
-我们先通过一系列简单的例子，来对 [Transaction DSL]{.title-ref}
+我们先通过一系列简单的例子，来对 [Transaction DSL]
 有一个直观的认识。
 
-如图所示，站在 [US]{.title-ref} 的角度，一个完整的事务操作，共分为 5
+如图所示，站在 [US] 的角度，一个完整的事务操作，共分为 5
 个步骤:
 
-> 1.  从 [Other System 1]{.title-ref} 收到一条请求消息;
-> 2.  对 [Other System 2]{.title-ref} 进行了一个函数调用;
-> 3.  对 [Other System 3]{.title-ref}
+> 1.  从 [Other System 1] 收到一条请求消息;
+> 2.  对 [Other System 2] 进行了一个函数调用;
+> 3.  对 [Other System 3]
 >     发送了一条异步消息，并等待其应答消息;
-> 4.  对 [Other System 4]{.title-ref}
+> 4.  对 [Other System 4]
 >     发送了一条异步消息，并等待其应答消息;
-> 5.  给 [Other System 1]{.title-ref} 发送了一条应答消息。
+> 5.  给 [Other System 1] 发送了一条应答消息。
 
-![image](images/ch-2/seq-1.png){.align-center}
+
 
 ## 定义事务
 
-使用 [Transaction DSL]{.title-ref} ，我们将上面序列图中的过程定义为:
+使用 [Transaction DSL] ，我们将上面序列图中的过程定义为:
 
 ``` c++
 __transaction (
@@ -36,10 +36,10 @@ __transaction (
 （\`Atom Action\`）。
 
 **基本操作** 共分为两类： **同步操作** ( [Synchronous
-Action]{.title-ref} )和 **异步操作** ( [Asynchronous Action]{.title-ref}
+Action] )和 **异步操作** ( [Asynchronous Action]
 )。
 
-任何无需进一步等待后续消息的 [Action]{.title-ref} ，都称作 **同步操作**
+任何无需进一步等待后续消息的 [Action] ，都称作 **同步操作**
 。这包括：函数调用，以及只发消息、不等回应的操作。 它们都需要通过
 `__sync`
 来指明。但为了更加清晰的区分究竟一个同步操作属于哪种具体类型，你可以使用
@@ -73,7 +73,7 @@ __transaction
 
 为了让上述代码可以工作，你需要实现其中的基本操作。事实上，无论一个事务有多么复杂，最终总是由基本操作组成，
 你需要做的事情就是定义这些基本操作，然后使用 [Transaction
-DSL]{.title-ref} 来描述它们运行的方式和顺序。
+DSL] 来描述它们运行的方式和顺序。
 
 我们之前已经提到，基本操作分为两种： **同步操作** 和 **异步操作**
 。定义它们时需要实现带有如下方法的类。
@@ -103,7 +103,7 @@ auto Action2(TransactionInfo const&) -> Status {
 }
 ```
 
-甚至可以是一个 [lambda]{.title-ref} ：
+甚至可以是一个 [lambda] ：
 
 ``` c++
 auto Action2 = [](TransactionInfo const&) -> Status {
@@ -198,11 +198,11 @@ private:
 
 ## 约束
 
-用户自定义的基本操作，如果通过类来定义， [Transaction DSL]{.title-ref}
+用户自定义的基本操作，如果通过类来定义， [Transaction DSL]
 要求它们必须是自满足的。 即，它们不需要外部通过 **构造函数** 或 `set`
 函数设置任何外部依赖。所有的依赖，都需要靠类自身到环境中亲自寻找，或亲自创建。
 所以，这些类必须存在 **默认构造函数** 。至于其它带参数的 **构造函数** 或
-`set` 接口，虽然其存在并不会妨害 [Transaction DSL]{.title-ref}
+`set` 接口，虽然其存在并不会妨害 [Transaction DSL]
 的编译和运行，但它们永远也不会得到调用。
 
 这样的约束，并不会对设计造成任何妨害。因为这些类本来就靠近系统的边界。而边界的代码本身就应该承担寻找或创建目标对象的职责。
@@ -210,8 +210,8 @@ private:
 ## 运行
 
 现在我们有了
-[Transaction]{.title-ref}，有了基本操作，一个事务就完整了。由于
-[Transaction]{.title-ref} 是一个事件驱动的组件。它的基本接口定义如下:
+[Transaction]，有了基本操作，一个事务就完整了。由于
+[Transaction] 是一个事件驱动的组件。它的基本接口定义如下:
 
 ``` c++
 auto start() -> Status;
@@ -261,13 +261,13 @@ auto runTransaction() -> Status {
 
 一旦系统因为性能要求，需要同时给不同其它系统/子系统发出请求消息，并同时等待它们的应答，如图所示。
 
-![image](images/ch-2/concurrent.png){.align-center}
+
 
 在这个例子中， `Action3` 和 `Action4`
 同时给各自的目标系统发出请求消息，并各自等待应答。
 这种情况下，简单的策略已经无法处理，实现者仍然不得不回到状态机模型中。
 
-使用 [Transaction DSL]{.title-ref}
+使用 [Transaction DSL]
 ，一个并发过程的定义非常简单，如下所示：
 
 ``` c++
@@ -297,7 +297,7 @@ __transaction
 下图所示的过程就属于这样的情况。其中，存在两个时间约束：首先，整个操作必须在
 `250ms` 之内完成，而其中的并发异步过程则必须 在 `200ms` 之内完成。
 
-![image](images/ch-2/timer-seq.png){.align-center}
+
 
 我们将这个带有时间约束的事务描述如下：
 
@@ -318,24 +318,24 @@ __transaction
 ### 母语言
 
 在这段代码里，我们首先定义了两个 `TimerId` : `TIMER_1` 和 `TIMER_2`
-。其定义的方式是 [C++]{.title-ref} 的常量。 为什么这里可以使用
-[C++]{.title-ref} 的语法?
+。其定义的方式是 [C++] 的常量。 为什么这里可以使用
+[C++] 的语法?
 
-是的，\`Transaction DSL\` 本身是就是 [C++]{.title-ref}
-的代码，它可以被任何成熟的 [C++]{.title-ref} 编译器编译。 它是
-[C++]{.title-ref} 代码这个事实，让它可以在需要时，使用任何
-[C++]{.title-ref} 的元素。
+是的，\`Transaction DSL\` 本身是就是 [C++]
+的代码，它可以被任何成熟的 [C++] 编译器编译。 它是
+[C++] 代码这个事实，让它可以在需要时，使用任何
+[C++] 的元素。
 
 ### 母语法
 
-它采取的语法形式非常接近于 [Lisp]{.title-ref} ，除了两点较大的差别:
+它采取的语法形式非常接近于 [Lisp] ，除了两点较大的差别:
 
-1.  [Lisp]{.title-ref} 将一个 [list]{.title-ref} 的名字放在括号内;
-2.  [Lisp]{.title-ref} 一个 [list]{.title-ref}
+1.  [Lisp] 将一个 [list] 的名字放在括号内;
+2.  [Lisp] 一个 [list]
     内的各个元素之间无需逗号分割。
 
-如果你以前没有接触过 [Lisp]{.title-ref} 语言，可通过下面一段
-[Lisp]{.title-ref} 的例子代码获取直观的印象。
+如果你以前没有接触过 [Lisp] 语言，可通过下面一段
+[Lisp] 的例子代码获取直观的印象。
 
 ``` lisp
 (defun find-books (towns)
@@ -345,42 +345,42 @@ __transaction
                (find-books (cdr towns))))))
 ```
 
-无论你是否喜欢 [Lisp]{.title-ref}
+无论你是否喜欢 [Lisp]
 语言的语法形式，但对于我们的问题，这已经是我所能找 到的
-[C++]{.title-ref} 元编程的最好表现形式。
+[C++] 元编程的最好表现形式。
 但两者相似的地方不仅仅是语法形式，更重要的在于其背后的 **元模型** 。对于
-[Lisp]{.title-ref} 语言而言，一切都是 [List]{.title-ref} ，
+[Lisp] 语言而言，一切都是 [List] ，
 所以，它本身就在表述一颗 **语法树** 。
 
-而对于 [Transaction DSL]{.title-ref} 而言，一切都是 [Action]{.title-ref}
-， 它本身就在表述一颗 [Action Tree]{.title-ref}
-，在这颗树上，每一个节点所代表的子树都是一个 [Action]{.title-ref} 。
+而对于 [Transaction DSL] 而言，一切都是 [Action]
+， 它本身就在表述一颗 [Action Tree]
+，在这颗树上，每一个节点所代表的子树都是一个 [Action] 。
 而在叶子节点，就是用户所定义的 **同步** 或 **异步** 的
-[Action]{.title-ref} (操作)。
+[Action] (操作)。
 
 ### Timer ID
 
-你已经看到，我们并没有在 [Transaction]{.title-ref} 中直接写 `200ms` 或
-`250ms` ，而是使用了 [Timer ID]{.title-ref} 。
+你已经看到，我们并没有在 [Transaction] 中直接写 `200ms` 或
+`250ms` ，而是使用了 [Timer ID] 。
 
-将时间约束的数值直接写在 [Transaction]{.title-ref}
+将时间约束的数值直接写在 [Transaction]
 里，从实现上并无难度，但是，这将导致用户将失去运行时修改它的能力。
 而用户很有可能希望某些时间约束是可配置的，从而在运行时是可修改的。
 
 所以，我们需要定义一个标识来定义这个约束，然后，Timer 管理器会将这个
 TimerID 和某项配置关联起来 （你当然也可以 hard coding 将其写死）。
 
-另外，无论 [Transaction DSL]{.title-ref}
+另外，无论 [Transaction DSL]
 被移植到什么平台上，都必须要满足:
 
--   在 [Timer]{.title-ref} 过期时，必须发送一条消息出来;
--   [Timer]{.title-ref} 的实现必须能够将 `Timer ID` 和
-    [Timer]{.title-ref} 过期消息之间建立起一一映射关系。
-    而这一切，在我所见过的各种 [Timer]{.title-ref} 机制中，都不难实现。
+-   在 [Timer] 过期时，必须发送一条消息出来;
+-   [Timer] 的实现必须能够将 `Timer ID` 和
+    [Timer] 过期消息之间建立起一一映射关系。
+    而这一切，在我所见过的各种 [Timer] 机制中，都不难实现。
 
 ### 同步操作的时间约束
 
-虽然你可以在一段 [Transaction DSL]{.title-ref}
+虽然你可以在一段 [Transaction DSL]
 代码中，对一个同步操作进行时间约束，但事实上，这个约束形同虚设。
 
 这是因为，一旦进入一个 **同步操作**
@@ -391,7 +391,7 @@ TimerID 和某项配置关联起来 （你当然也可以 hard coding 将其写�
 
 ## 回到最初
 
-现在，我们可以使用 [Transaction DSL]{.title-ref}
+现在，我们可以使用 [Transaction DSL]
 来对我们最初的过程进行描述:
 
 ``` c++
@@ -411,16 +411,16 @@ __transaction
 
 ## 优势
 
-在本章中，我们初步了解了如何使用 [Transaction DSL]{.title-ref}
+在本章中，我们初步了解了如何使用 [Transaction DSL]
 来定义一个异步过程。 即，实现 **原子操作** ：分为 **同步** 和 **异步**
-两种。 然后通过 [Transaction DSL]{.title-ref} 来描述这些 **基本操作**
+两种。 然后通过 [Transaction DSL] 来描述这些 **基本操作**
 的执行方式。
 
 通过这些例子，我们可以看到 `Transaction DSL` 的一些主要优势:
 
 直观:
 
-:   [Transaction DSL]{.title-ref} 的描述，和 [UML]{.title-ref}
+:   [Transaction DSL] 的描述，和 [UML]
     序列图的描述有着明确直观的映射关系。设计和实现之间的 gap
     被大大缩小。
 
@@ -431,7 +431,7 @@ __transaction
 
     不过你仍然需要写一些代码------那就是------将序列图没有冗余的描述一次。
     但\...please\...不要告诉我， 你打算开发一个图形界面，将
-    [UML]{.title-ref} 序列图自动转化为 [Transaction DSL]{.title-ref}
+    [UML] 序列图自动转化为 [Transaction DSL]
     ，这样就可以连这些代码也不用写了。
 
     毫无疑问，这将是一笔极其糟糕的投资，你应该将你过剩的精力花在真正有价值的事情上。
@@ -443,11 +443,11 @@ __transaction
 
 Native Language:
 
-:   [Transaction DSL]{.title-ref} 本身就是 [C++]{.title-ref}
-    代码，这就意味着它可以和 [C++]{.title-ref} 的其它代码元
-    素自由地结合使用，与其它 [C++]{.title-ref} 代码进行无缝配合。
+:   [Transaction DSL] 本身就是 [C++]
+    代码，这就意味着它可以和 [C++] 的其它代码元
+    素自由地结合使用，与其它 [C++] 代码进行无缝配合。
 
 图灵完备:
 
-:   随着后续章节的介绍，你就可以发现， [Transaction DSL]{.title-ref}
+:   随着后续章节的介绍，你就可以发现， [Transaction DSL]
     是图灵完备的。也就是说它可以解决一切图灵可计算问题。
