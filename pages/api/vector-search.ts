@@ -136,6 +136,7 @@ export default async function handler(req: NextRequest) {
       content: prompt,
     }
 
+    console.log(prompt)
     const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
       messages: [chatMessage],
